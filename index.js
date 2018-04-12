@@ -2,8 +2,8 @@ const root = document.querySelector('.react-root');
 const h = React.createElement;
 
 let allBlogs = [
-    { id: '1', title: 'Hello world', body: 'Lorem ipsum.' },
-    { id: '2', title: 'Goodbye world', body: 'Muspi merol.' },
+    { id: '1', title: 'Hello world', body: 'Lorem ipsum.', isBeingEdited: false },
+    { id: '2', title: 'Goodbye world', body: 'Muspi merol.', isBeingEdited: true },
 ];
 
 let Greeting = ({ person }) => h('h1', { className: 'greeting' }, `Hello ${person}!`);
@@ -17,16 +17,47 @@ let removeBlog = (blogToDelete) => {
     update();
 };
 
+let editBlog = (blogToEdit) => {
+    let blog = allBlogs.find(blog => blog.id === blogToEdit.id);
+    blog.isBeingEdited = !blog.isBeingEdited;
+    update();
+};
+
+let updateTitle = (blogToEdit, title) => {
+    let blog = allBlogs.find(blog => blog.id === blogToEdit.id);
+    blog.title = title.toUpperCase();
+    update();
+};
+
+let updateBody = (blogToEdit, body) => {
+    let blog = allBlogs.find(blog => blog.id === blogToEdit.id);
+    blog.body = body;
+    update();
+};
+
 let DeleteBlogButton = (blog) =>
     h('button', {
         className: 'big-red',
         onClick: () => removeBlog(blog)
     }, 'Remove Blog');
 
+let EditBlogButton = (blog) =>
+    h('button', {
+        onClick: () => editBlog(blog)
+    }, 'Edit Blog');
+
+let EditBlogForm = (blog) =>
+    h('form', null, [
+        h('input', { value: blog.title, onChange: (event) => updateTitle(blog, event.target.value) }),
+        h('input', { value: blog.body, onChange: (event) => updateBody(blog, event.target.value) }),
+    ]);
+
 let BlogRow = (blog) =>
     h('div', null, [
         h('h1', null, blog.title),
         h(DeleteBlogButton, blog),
+        h(EditBlogButton, blog),
+        blog.isBeingEdited && h(EditBlogForm, blog),
         h('p', null, blog.body),
     ]);
 
