@@ -1,45 +1,49 @@
-const container = document.querySelector('.react-root');
+const root = document.querySelector('.react-root');
 const h = React.createElement;
 
-// let greeting = h('h1', { className: 'greeting' }, "Hello world!");
-// ReactDOM.render(greeting, container);
-
-// let Greeting = ({ person }) => h('h1', { className: 'greeting' }, `Hello ${person}!`);
-// ReactDOM.render(Greeting({ person: 'Jonathan' }), container);
+let allBlogs = [
+    { id: '1', title: 'Hello world', body: 'Lorem ipsum.' },
+    { id: '2', title: 'Goodbye world', body: 'Muspi merol.' },
+];
 
 let Greeting = ({ person }) => h('h1', { className: 'greeting' }, `Hello ${person}!`);
 let Title = () => h('h1', null, 'React');
-let Footer = () => h('footer', null, 'Copyright 2018');
-// let Page = () => h('div', null, [
-//     h(Title, null, []),
-//     h(Greeting, { person: 'Jonathan' }, []),
-//     h(Footer, null, [])
-// ]);
-// ReactDOM.render(h(Page, null, []), container);
+let Footer = () => h('footer', { children: 'Copyright 2018' });
 
-class Counter extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { counter: 0 };
-    }
+let removeBlog = (blogToDelete) => {
+    console.log('I would like to delete ' + blogToDelete.title);
+    let { id } = blogToDelete;
+    allBlogs = allBlogs.filter((blog) => id !== blog.id);
+    update();
+};
 
-    render() {
-        let { counter } = this.state;
-        let onClick = () => {
-            this.setState({ counter: counter + 1 });
-        };
+let DeleteBlogButton = (blog) =>
+    h('button', {
+        className: 'big-red',
+        onClick: () => removeBlog(blog)
+    }, 'Remove Blog');
 
-        return h('p', null, [
-            h('span', null, `${counter}`),
-            h('button', { onClick }, 'Increment')
-        ]);
-    }
+let BlogRow = (blog) =>
+    h('div', null, [
+        h('h1', null, blog.title),
+        h(DeleteBlogButton, blog),
+        h('p', null, blog.body),
+    ]);
+
+let BlogList = ({ blogs }) =>
+    h('div', { className: 'blog-list' },
+        blogs.map(blog => h(BlogRow, blog))
+    );
+
+let Page = ({ blogs }) => h('div', null, [
+    Title(),
+    Greeting({ person: 'Jonathan' }),
+    h(BlogList, { blogs }),
+    h(Footer)
+]);
+
+let update = () => {
+    ReactDOM.render(h(Page, { blogs: allBlogs }, []), root);
 }
 
-let Page = () => h('div', null, [
-    h(Title, null, []),
-    h(Greeting, { person: 'Jonathan' }, []),
-    h(Counter, null, []),
-    h(Footer, null, [])
-]);
-ReactDOM.render(h(Page, null, []), container);
+update();
