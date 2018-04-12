@@ -2,9 +2,11 @@ const root = document.querySelector('.react-root');
 const h = React.createElement;
 
 let allBlogs = [
-    { id: '1', title: 'Hello world', body: 'Lorem ipsum.', isBeingEdited: false },
-    { id: '2', title: 'Goodbye world', body: 'Muspi merol.', isBeingEdited: true },
+    { id: '1', title: 'Hello world', body: 'Lorem ipsum.' },
+    { id: '2', title: 'Goodbye world', body: 'Muspi merol.' },
 ];
+
+let blogBeingEdited = null;
 
 let Greeting = ({ person }) => h('h1', { className: 'greeting' }, `Hello ${person}!`);
 let Title = () => h('h1', null, 'React');
@@ -18,20 +20,24 @@ let removeBlog = (blogToDelete) => {
 };
 
 let editBlog = (blogToEdit) => {
-    let blog = allBlogs.find(blog => blog.id === blogToEdit.id);
-    blog.isBeingEdited = !blog.isBeingEdited;
+    blogBeingEdited = Object.assign({}, blogToEdit);
     update();
 };
 
 let updateTitle = (blogToEdit, title) => {
-    let blog = allBlogs.find(blog => blog.id === blogToEdit.id);
-    blog.title = title.toUpperCase();
+    blogToEdit.title = title.toUpperCase();
     update();
 };
 
 let updateBody = (blogToEdit, body) => {
+    blogToEdit.body = body;
+    update();
+};
+
+let saveBlog = (blogToEdit) => {
     let blog = allBlogs.find(blog => blog.id === blogToEdit.id);
-    blog.body = body;
+    Object.assign(blog, blogToEdit);
+    blogBeingEdited = null;
     update();
 };
 
@@ -48,8 +54,9 @@ let EditBlogButton = (blog) =>
 
 let EditBlogForm = (blog) =>
     h('form', null, [
-        h('input', { value: blog.title, onChange: (event) => updateTitle(blog, event.target.value) }),
-        h('input', { value: blog.body, onChange: (event) => updateBody(blog, event.target.value) }),
+        h('input', { value: blogBeingEdited.title, onChange: (event) => updateTitle(blogBeingEdited, event.target.value) }),
+        h('input', { value: blogBeingEdited.body, onChange: (event) => updateBody(blogBeingEdited, event.target.value) }),
+        h('button', { onClick: () => saveBlog(blogBeingEdited) }, 'Save'),
     ]);
 
 let BlogRow = (blog) =>
@@ -57,7 +64,7 @@ let BlogRow = (blog) =>
         h('h1', null, blog.title),
         h(DeleteBlogButton, blog),
         h(EditBlogButton, blog),
-        blog.isBeingEdited && h(EditBlogForm, blog),
+        blogBeingEdited && blog.id === blogBeingEdited.id && h(EditBlogForm, blog),
         h('p', null, blog.body),
     ]);
 
