@@ -61,7 +61,7 @@ let BlogList = ({
 }) =>
     <div className="blog-list">
         {
-            blogs.map(blog => <BlogRow blog={blog} blogBeingEdited={blogBeingEdited} removeBlog={removeBlog} editBlog={editBlog} updateTitle={updateTitle} updateBody={updateBody} saveBlog={saveBlog} />)
+            blogs.map(blog => <BlogRow key={blog.id} blog={blog} blogBeingEdited={blogBeingEdited} removeBlog={removeBlog} editBlog={editBlog} updateTitle={updateTitle} updateBody={updateBody} saveBlog={saveBlog} />)
         }
     </div>
 
