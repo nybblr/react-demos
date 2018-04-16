@@ -1,10 +1,5 @@
 const root = document.querySelector('.react-root');
 
-const allBlogs = [
-    { id: '1', title: 'Hello world', body: 'Lorem ipsum.' },
-    { id: '2', title: 'Goodbye world', body: 'Muspi merol.' },
-];
-
 let Greeting = ({ person }) =>
     <h1 className="greeting">Hello {person}!</h1>
 let Title = () => <h1>React</h1>
@@ -69,9 +64,21 @@ class BlogListPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            blogs: allBlogs,
+            blogs: [],
             blogBeingEdited: null
         };
+    }
+
+    componentDidMount() {
+        this.fetchData();
+    }
+
+    fetchData() {
+        fetch('https://jsonplaceholder.typicode.com/posts')
+            .then(res => res.json())
+            .then(blogs => {
+                this.setState({ blogs })
+            })
     }
 
     render() {
@@ -115,10 +122,15 @@ class BlogListPage extends React.Component {
             });
         };
 
+        let refresh = () => {
+            this.fetchData();
+        }
+
         return (
             <div>
                 <Title />
                 <Greeting person="Jonathan" />
+                <button onClick={refresh}>Refresh</button>
                 <BlogList
                     blogs={blogs}
                     blogBeingEdited={blogBeingEdited}
