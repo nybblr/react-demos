@@ -64,6 +64,7 @@ class BlogListPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            userId: '',
             blogs: [],
             blogBeingEdited: null
         };
@@ -73,8 +74,17 @@ class BlogListPage extends React.Component {
         this.fetchData();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.userId !== prevState.userId) {
+            this.fetchData();
+        }
+    }
+
     fetchData() {
-        fetch('https://jsonplaceholder.typicode.com/posts')
+        let { userId } = this.state;
+        let url = 'https://jsonplaceholder.typicode.com/posts';
+        if (userId) { url += `?userId=${userId}` }
+        fetch(url)
             .then(res => res.json())
             .then(blogs => {
                 this.setState({ blogs })
@@ -84,7 +94,11 @@ class BlogListPage extends React.Component {
     render() {
         // let blogs = this.state.blogs;
         // let blogBeingEdited = this.state.blogBeingEdited;
-        let { blogs, blogBeingEdited } = this.state;
+        let {
+            blogs,
+            blogBeingEdited,
+            userId,
+        } = this.state;
 
         let removeBlog = (blogToDelete) => {
             let { id } = blogToDelete;
@@ -131,6 +145,9 @@ class BlogListPage extends React.Component {
                 <Title />
                 <Greeting person="Jonathan" />
                 <button onClick={refresh}>Refresh</button>
+                <input
+                    value={userId}
+                    onChange={event => this.setState({ userId: event.target.value})} />
                 <BlogList
                     blogs={blogs}
                     blogBeingEdited={blogBeingEdited}
